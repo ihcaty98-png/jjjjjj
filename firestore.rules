@@ -1,0 +1,373 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+             'email' in request.auth.token &&
+             request.auth.token.email is string &&
+             'email_verified' in request.auth.token &&
+             request.auth.token.email_verified == true &&
+             request.auth.token.email.lower() == 'firechatmyanmar@gmail.com';
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidRecapScript(data, userId) {
+      return data.userId is string &&
+             data.userId == userId &&
+             data.sourceTitle is string &&
+             data.sourceTitle.size() >= 1 &&
+             data.sourceTitle.size() <= 160 &&
+             data.platform in ['YOUTUBE', 'TIKTOK'] &&
+             data.genre is string &&
+             data.genre.size() >= 1 &&
+             data.genre.size() <= 60 &&
+             data.viralTitles is list &&
+             data.viralTitles.size() >= 1 &&
+             data.viralTitles.size() <= 5 &&
+             data.viralTitles[0] is string &&
+             data.openingHook is string &&
+             data.openingHook.size() >= 1 &&
+             data.openingHook.size() <= 2500 &&
+             data.scenes is list &&
+             data.scenes.size() >= 1 &&
+             data.scenes.size() <= 60 &&
+             data.scenes[0] is map &&
+             data.scenes[0].timestamp is string &&
+             data.scenes[0].voiceover is string &&
+             data.outro is string &&
+             data.outro.size() >= 1 &&
+             data.outro.size() <= 2000 &&
+             data.estimatedDuration is string &&
+             data.estimatedDuration.size() >= 1 &&
+             data.estimatedDuration.size() <= 40 &&
+             (!('directorNotes' in data) || (data.directorNotes is string && data.directorNotes.size() <= 1000)) &&
+             data.favorite is bool &&
+             data.createdAt is timestamp &&
+             data.createdAt <= request.time &&
+             data.updatedAt is timestamp &&
+             data.updatedAt <= request.time;
+    }
+
+    function isValidUserAccount(data, userId) {
+      return data.userId is string &&
+             data.userId == userId &&
+             data.email is string &&
+             data.email.size() <= 160 &&
+             data.displayName is string &&
+             data.displayName.size() <= 120 &&
+             data.coins is int &&
+             data.coins >= 0 &&
+             data.coins <= 1000000 &&
+             data.trialStartDate is string &&
+             data.trialStartDate.size() == 10 &&
+             data.freeTrialDates is list &&
+             data.freeTrialDates.size() <= 3 &&
+             (data.freeTrialDates.size() == 0 || (data.freeTrialDates[0] is string && data.freeTrialDates[0].size() == 10)) &&
+             data.vipTier in ['NONE', 'VIP_V1', 'VIP_V2', 'VIP_V3'] &&
+             data.vipExpiresAtMs is int &&
+             data.vipExpiresAtMs >= 0 &&
+             data.createdAt is timestamp &&
+             data.createdAt <= request.time &&
+             data.updatedAt is timestamp &&
+             data.updatedAt <= request.time;
+    }
+
+    function isValidAppConfig(data) {
+      return data.coinCostPerVideo is int &&
+             data.coinCostPerVideo >= 0 &&
+             data.coinCostPerVideo <= 10000 &&
+             data.kbzPayNumber is string &&
+             data.kbzPayNumber.size() <= 40 &&
+             data.wavePayNumber is string &&
+             data.wavePayNumber.size() <= 40 &&
+             data.vipV1Price is int &&
+             data.vipV1Price >= 0 &&
+             data.vipV1Price <= 10000000 &&
+             data.vipV2Price is int &&
+             data.vipV2Price >= 0 &&
+             data.vipV2Price <= 10000000 &&
+             data.vipV3Price is int &&
+             data.vipV3Price >= 0 &&
+             data.vipV3Price <= 10000000 &&
+             data.announcementActive is bool &&
+             data.announcementTitle is string &&
+             data.announcementTitle.size() <= 160 &&
+             data.announcementMessage is string &&
+             data.announcementMessage.size() <= 2000 &&
+             data.announcementVersion is string &&
+             data.announcementVersion.size() <= 40 &&
+             data.updateUrl is string &&
+             data.updateUrl.size() <= 500 &&
+             data.updatedAt is timestamp &&
+             data.updatedAt <= request.time;
+    }
+
+    function isValidPaymentRequest(data) {
+      return data.userId is string &&
+             data.userId.size() >= 1 &&
+             data.userId.size() <= 128 &&
+             data.userEmail is string &&
+             data.userEmail.size() <= 160 &&
+             data.userName is string &&
+             data.userName.size() <= 120 &&
+             data.requestType in ['VIP', 'COINS'] &&
+             data.vipTier in ['NONE', 'VIP_V1', 'VIP_V2', 'VIP_V3'] &&
+             data.requestedCoins is int &&
+             data.requestedCoins >= 0 &&
+             data.requestedCoins <= 100000 &&
+             data.amountMmk is int &&
+             data.amountMmk >= 100 &&
+             data.amountMmk <= 50000000 &&
+             data.paymentMethod in ['KBZPAY', 'WAVEPAY'] &&
+             data.payerPhone is string &&
+             data.payerPhone.size() >= 5 &&
+             data.payerPhone.size() <= 30 &&
+             data.transactionRef is string &&
+             data.transactionRef.size() <= 80 &&
+             data.note is string &&
+             data.note.size() <= 500 &&
+             (!('receiptImageBase64' in data) || (data.receiptImageBase64 is string && data.receiptImageBase64.size() <= 280000)) &&
+             data.status in ['PENDING', 'APPROVED', 'REJECTED'] &&
+             (!('adminNote' in data) || (data.adminNote is string && data.adminNote.size() <= 500)) &&
+             (!('reviewedBy' in data) || (data.reviewedBy is string && data.reviewedBy.size() <= 160)) &&
+             data.createdAt is timestamp &&
+             data.createdAt <= request.time &&
+             data.updatedAt is timestamp &&
+             data.updatedAt <= request.time;
+    }
+
+    function isValidHelpMessage(data) {
+      return data.userId is string &&
+             data.userId.size() >= 1 &&
+             data.userId.size() <= 128 &&
+             data.userEmail is string &&
+             data.userEmail.size() <= 160 &&
+             data.userName is string &&
+             data.userName.size() <= 120 &&
+             data.subject is string &&
+             data.subject.size() >= 1 &&
+             data.subject.size() <= 140 &&
+             data.message is string &&
+             data.message.size() >= 1 &&
+             data.message.size() <= 2000 &&
+             data.status in ['OPEN', 'REPLIED', 'RESOLVED'] &&
+             (!('adminReply' in data) || (data.adminReply is string && data.adminReply.size() <= 2000)) &&
+             (!('repliedBy' in data) || (data.repliedBy is string && data.repliedBy.size() <= 160)) &&
+             data.createdAt is timestamp &&
+             data.createdAt <= request.time &&
+             data.updatedAt is timestamp &&
+             data.updatedAt <= request.time;
+    }
+
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'email', 'displayName', 'coins',
+                         'trialStartDate', 'freeTrialDates', 'vipTier',
+                         'vipExpiresAtMs', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'email', 'displayName', 'coins',
+                         'trialStartDate', 'freeTrialDates', 'vipTier',
+                         'vipExpiresAtMs', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidUserAccount(incoming(), userId) &&
+                       incoming().coins == 0 &&
+                       incoming().vipTier == 'NONE' &&
+                       incoming().vipExpiresAtMs == 0 &&
+                       incoming().freeTrialDates.size() == 0;
+
+      allow update: if isSignedIn() &&
+                       isValidId(userId) &&
+                       isValidUserAccount(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       (
+                         isAdmin() ||
+                         (
+                           isOwner(userId) &&
+                           (
+                             incoming().diff(existing()).affectedKeys().hasOnly(['email', 'displayName', 'updatedAt']) ||
+                             (
+                               incoming().diff(existing()).affectedKeys().hasOnly(['freeTrialDates', 'updatedAt']) &&
+                               incoming().freeTrialDates.size() <= 3 &&
+                               incoming().freeTrialDates.size() == existing().freeTrialDates.size() + 1
+                             ) ||
+                             (
+                               incoming().diff(existing()).affectedKeys().hasOnly(['coins', 'updatedAt']) &&
+                               incoming().coins < existing().coins &&
+                               incoming().coins >= 0
+                             )
+                           )
+                         )
+                       );
+
+      allow delete: if isAdmin() && isValidId(userId);
+    }
+
+    match /users/{userId}/recapScripts/{scriptId} {
+      allow get: if isOwner(userId) && isValidId(scriptId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(scriptId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'sourceTitle', 'platform', 'genre',
+                         'viralTitles', 'openingHook', 'scenes', 'outro',
+                         'estimatedDuration', 'favorite', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'sourceTitle', 'platform', 'genre',
+                         'viralTitles', 'openingHook', 'scenes', 'outro',
+                         'estimatedDuration', 'directorNotes', 'favorite',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidRecapScript(incoming(), userId);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(scriptId) &&
+                       isValidRecapScript(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       (
+                         incoming().diff(existing()).affectedKeys().hasOnly(['favorite', 'updatedAt']) ||
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'sourceTitle', 'openingHook', 'outro', 'directorNotes',
+                           'scenes', 'viralTitles', 'updatedAt'
+                         ])
+                       );
+
+      allow delete: if isOwner(userId) && isValidId(scriptId);
+    }
+
+    match /appConfig/{configId} {
+      allow get: if isSignedIn() && configId == 'settings';
+      allow list: if false;
+
+      allow create: if isAdmin() &&
+                       configId == 'settings' &&
+                       incoming().keys().hasAll([
+                         'coinCostPerVideo', 'kbzPayNumber', 'wavePayNumber',
+                         'vipV1Price', 'vipV2Price', 'vipV3Price',
+                         'announcementActive', 'announcementTitle', 'announcementMessage',
+                         'announcementVersion', 'updateUrl', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'coinCostPerVideo', 'kbzPayNumber', 'wavePayNumber',
+                         'vipV1Price', 'vipV2Price', 'vipV3Price',
+                         'announcementActive', 'announcementTitle', 'announcementMessage',
+                         'announcementVersion', 'updateUrl', 'updatedAt'
+                       ]) &&
+                       isValidAppConfig(incoming());
+
+      allow update: if isAdmin() &&
+                       configId == 'settings' &&
+                       isValidAppConfig(incoming()) &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'coinCostPerVideo', 'kbzPayNumber', 'wavePayNumber',
+                         'vipV1Price', 'vipV2Price', 'vipV3Price',
+                         'announcementActive', 'announcementTitle', 'announcementMessage',
+                         'announcementVersion', 'updateUrl', 'updatedAt'
+                       ]);
+
+      allow delete: if false;
+    }
+
+    match /paymentRequests/{requestId} {
+      allow get: if isValidId(requestId) && (isAdmin() || (isSignedIn() && existing().userId == request.auth.uid));
+      allow list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+
+      allow create: if isSignedIn() &&
+                       isValidId(requestId) &&
+                       incoming().userId == request.auth.uid &&
+                       incoming().status == 'PENDING' &&
+                       !('adminNote' in incoming()) &&
+                       !('reviewedBy' in incoming()) &&
+                       incoming().keys().hasAll([
+                         'userId', 'userEmail', 'userName', 'requestType',
+                         'vipTier', 'requestedCoins', 'amountMmk', 'paymentMethod',
+                         'payerPhone', 'transactionRef', 'note', 'status',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'userEmail', 'userName', 'requestType',
+                         'vipTier', 'requestedCoins', 'amountMmk', 'paymentMethod',
+                         'payerPhone', 'transactionRef', 'note', 'receiptImageBase64',
+                         'status', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidPaymentRequest(incoming());
+
+      allow update: if isAdmin() &&
+                       isValidId(requestId) &&
+                       isValidPaymentRequest(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'status', 'adminNote', 'reviewedBy', 'updatedAt'
+                       ]);
+
+      allow delete: if isAdmin() && isValidId(requestId);
+    }
+
+    match /helpMessages/{messageId} {
+      allow get: if isValidId(messageId) && (isAdmin() || (isSignedIn() && existing().userId == request.auth.uid));
+      allow list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+
+      allow create: if isSignedIn() &&
+                       isValidId(messageId) &&
+                       incoming().userId == request.auth.uid &&
+                       incoming().status == 'OPEN' &&
+                       !('adminReply' in incoming()) &&
+                       !('repliedBy' in incoming()) &&
+                       incoming().keys().hasAll([
+                         'userId', 'userEmail', 'userName', 'subject',
+                         'message', 'status', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'userEmail', 'userName', 'subject',
+                         'message', 'status', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidHelpMessage(incoming());
+
+      allow update: if isAdmin() &&
+                       isValidId(messageId) &&
+                       isValidHelpMessage(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'status', 'adminReply', 'repliedBy', 'updatedAt'
+                       ]);
+
+      allow delete: if isValidId(messageId) && (isAdmin() || (isSignedIn() && existing().userId == request.auth.uid));
+    }
+  }
+}

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <cache-path name="dub_exports" path="dub_exports/" />
+    <external-files-path name="exported_movies" path="Movies/" />
+</paths>

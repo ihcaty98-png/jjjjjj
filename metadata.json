@@ -1,0 +1,6 @@
+{
+  "name": "Fire RecapScript",
+  "description": "Myanmar Movie Recap scriptwriter and AI Burmese video dubbing, subtitle burning, and export studio.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

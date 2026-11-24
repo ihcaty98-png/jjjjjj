@@ -1,0 +1,401 @@
+{
+  "entities": {
+    "RecapScript": {
+      "title": "RecapScript",
+      "description": "A generated Myanmar Movie Recap script with viral titles, opening hook, timestamped scenes, and outro saved by a creator.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner Firebase Auth UID."
+        },
+        "sourceTitle": {
+          "type": "string",
+          "description": "Title or clip label for the recap script (1-160 chars)."
+        },
+        "platform": {
+          "type": "string",
+          "enum": ["YOUTUBE", "TIKTOK"],
+          "description": "Target video platform format."
+        },
+        "genre": {
+          "type": "string",
+          "description": "Detected or selected movie genre."
+        },
+        "viralTitles": {
+          "type": "array",
+          "description": "Three viral Myanmar recap titles (1-5 items)."
+        },
+        "openingHook": {
+          "type": "string",
+          "description": "0:00 - 0:15 high-retention Burmese opening hook."
+        },
+        "scenes": {
+          "type": "array",
+          "description": "Ordered list of timestamped scenes with timestamp, visualCue, and Burmese voiceover."
+        },
+        "outro": {
+          "type": "string",
+          "description": "Engaging Burmese outro with comment question."
+        },
+        "estimatedDuration": {
+          "type": "string",
+          "description": "Estimated voiceover or video duration label."
+        },
+        "directorNotes": {
+          "type": "string",
+          "description": "Optional creator notes or story hints."
+        },
+        "favorite": {
+          "type": "boolean",
+          "description": "Whether the creator starred this script."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() on creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() on creation and update."
+        }
+      },
+      "required": [
+        "userId",
+        "sourceTitle",
+        "platform",
+        "genre",
+        "viralTitles",
+        "openingHook",
+        "scenes",
+        "outro",
+        "estimatedDuration",
+        "favorite",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "Creator account profile tracking free 3-day (1 video/day) trial dates, Video Coins balance, and VIP tier status.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID matching the document ID."
+        },
+        "email": {
+          "type": "string",
+          "description": "Signed-in Google Gmail address."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Creator display name."
+        },
+        "coins": {
+          "type": "integer",
+          "description": "Available Video Coins balance (>= 0)."
+        },
+        "trialStartDate": {
+          "type": "string",
+          "description": "YYYY-MM-DD calendar start date of the 3-day free trial in Asia/Yangon time."
+        },
+        "freeTrialDates": {
+          "type": "array",
+          "description": "Distinct YYYY-MM-DD dates (max 3) on which the creator used their 1 free daily video."
+        },
+        "vipTier": {
+          "type": "string",
+          "enum": ["NONE", "VIP_V1", "VIP_V2", "VIP_V3"],
+          "description": "Active VIP subscription tier."
+        },
+        "vipExpiresAtMs": {
+          "type": "integer",
+          "description": "UTC epoch milliseconds when VIP expires (0 when NONE)."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() on creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() on creation and update."
+        }
+      },
+      "required": [
+        "userId",
+        "email",
+        "displayName",
+        "coins",
+        "trialStartDate",
+        "freeTrialDates",
+        "vipTier",
+        "vipExpiresAtMs",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AppConfig": {
+      "title": "AppConfig",
+      "description": "Global Admin-controlled pricing, KBZPay/WavePay payment phone numbers, and in-app update broadcast notice.",
+      "type": "object",
+      "properties": {
+        "coinCostPerVideo": {
+          "type": "integer",
+          "description": "Video Coins deducted per script generation or AI video dub."
+        },
+        "kbzPayNumber": {
+          "type": "string",
+          "description": "KBZPay merchant phone number (default 09672804206)."
+        },
+        "wavePayNumber": {
+          "type": "string",
+          "description": "WavePay merchant phone number configured by Admin."
+        },
+        "vipV1Price": {
+          "type": "integer",
+          "description": "VIP V1 (1 month) price in MMK (default 45000)."
+        },
+        "vipV2Price": {
+          "type": "integer",
+          "description": "VIP V2 (2 months) price in MMK (default 56000)."
+        },
+        "vipV3Price": {
+          "type": "integer",
+          "description": "VIP V3 (7 months) price in MMK (default 150000)."
+        },
+        "announcementActive": {
+          "type": "boolean",
+          "description": "Whether the on-screen App Update announcement is currently active."
+        },
+        "announcementTitle": {
+          "type": "string",
+          "description": "Title of the in-app update message."
+        },
+        "announcementMessage": {
+          "type": "string",
+          "description": "Body of the in-app update broadcast shown to users."
+        },
+        "announcementVersion": {
+          "type": "string",
+          "description": "App update version tag."
+        },
+        "updateUrl": {
+          "type": "string",
+          "description": "Optional download or announcement URL."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp()."
+        }
+      },
+      "required": [
+        "coinCostPerVideo",
+        "kbzPayNumber",
+        "wavePayNumber",
+        "vipV1Price",
+        "vipV2Price",
+        "vipV3Price",
+        "announcementActive",
+        "announcementTitle",
+        "announcementMessage",
+        "announcementVersion",
+        "updateUrl",
+        "updatedAt"
+      ]
+    },
+    "PaymentRequest": {
+      "title": "PaymentRequest",
+      "description": "User payment proof submission (KBZPay or WavePay) for VIP V1/V2/V3 or Video Coins awaiting Admin approval.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Submitting creator's Firebase Auth UID."
+        },
+        "userEmail": {
+          "type": "string",
+          "description": "Submitting creator's Gmail address."
+        },
+        "userName": {
+          "type": "string",
+          "description": "Submitting creator's display name."
+        },
+        "requestType": {
+          "type": "string",
+          "enum": ["VIP", "COINS"],
+          "description": "Whether user is purchasing a VIP plan or Video Coins."
+        },
+        "vipTier": {
+          "type": "string",
+          "enum": ["NONE", "VIP_V1", "VIP_V2", "VIP_V3"],
+          "description": "Requested VIP tier when requestType is VIP."
+        },
+        "requestedCoins": {
+          "type": "integer",
+          "description": "Number of Video Coins requested."
+        },
+        "amountMmk": {
+          "type": "integer",
+          "description": "Payment amount in Myanmar Kyats (MMK)."
+        },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["KBZPAY", "WAVEPAY"],
+          "description": "Selected payment wallet."
+        },
+        "payerPhone": {
+          "type": "string",
+          "description": "Payer's KBZPay or WavePay phone number."
+        },
+        "transactionRef": {
+          "type": "string",
+          "description": "Transaction ID / last 6 digits."
+        },
+        "note": {
+          "type": "string",
+          "description": "Optional note from user."
+        },
+        "receiptImageBase64": {
+          "type": "string",
+          "description": "Optional compressed JPEG receipt screenshot encoded as Base64."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["PENDING", "APPROVED", "REJECTED"],
+          "description": "Review status managed by Admin."
+        },
+        "adminNote": {
+          "type": "string",
+          "description": "Optional review note added by Admin."
+        },
+        "reviewedBy": {
+          "type": "string",
+          "description": "Admin email that processed this request."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() on creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() on creation and update."
+        }
+      },
+      "required": [
+        "userId",
+        "userEmail",
+        "userName",
+        "requestType",
+        "vipTier",
+        "requestedCoins",
+        "amountMmk",
+        "paymentMethod",
+        "payerPhone",
+        "transactionRef",
+        "note",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "HelpMessage": {
+      "title": "HelpMessage",
+      "description": "Support message sent by a creator to Admin with Admin reply thread.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Creator Firebase Auth UID."
+        },
+        "userEmail": {
+          "type": "string",
+          "description": "Creator Gmail address."
+        },
+        "userName": {
+          "type": "string",
+          "description": "Creator display name."
+        },
+        "subject": {
+          "type": "string",
+          "description": "Help message subject."
+        },
+        "message": {
+          "type": "string",
+          "description": "Detailed help message body."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["OPEN", "REPLIED", "RESOLVED"],
+          "description": "Ticket status."
+        },
+        "adminReply": {
+          "type": "string",
+          "description": "Optional Admin response message."
+        },
+        "repliedBy": {
+          "type": "string",
+          "description": "Admin email that replied."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() on creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() on creation and update."
+        }
+      },
+      "required": [
+        "userId",
+        "userEmail",
+        "userName",
+        "subject",
+        "message",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserAccount"
+      },
+      "description": "Creator account profile storing trial dates, Video Coins balance, and VIP tier."
+    },
+    "/users/{userId}/recapScripts/{scriptId}": {
+      "schema": {
+        "$ref": "#/entities/RecapScript"
+      },
+      "description": "Per-user private vault of saved Myanmar Movie Recap scripts."
+    },
+    "/appConfig/{configId}": {
+      "schema": {
+        "$ref": "#/entities/AppConfig"
+      },
+      "description": "Global application settings document ('settings') managed by Admin."
+    },
+    "/paymentRequests/{requestId}": {
+      "schema": {
+        "$ref": "#/entities/PaymentRequest"
+      },
+      "description": "VIP and Video Coin purchase requests submitted by users for Admin approval."
+    },
+    "/helpMessages/{messageId}": {
+      "schema": {
+        "$ref": "#/entities/HelpMessage"
+      },
+      "description": "User help and support messages with Admin replies."
+    }
+  }
+}

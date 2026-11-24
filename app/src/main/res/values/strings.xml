@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Fire RecapScript</string>
+    <string name="auth_headline">Myanmar Movie Recap Studio</string>
+    <string name="auth_subheadline">ဗီဒီယိုဖိုင်ကို AI ဖြင့် ခွဲခြမ်းစိတ်ဖြာပြီး ကြည့်ရှုသူများ မျက်တောင်မခတ်တမ်း စွဲလမ်းစေမည့် မြန်မာ Movie Recap ဇာတ်ညွှန်းများ ဖန်တီးပါ။</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="nav_studio">Studio</string>
+    <string name="nav_dub">Video Dub</string>
+    <string name="nav_vault">Scripts</string>
+    <string name="nav_billing">Billing</string>
+    <string name="pick_video_cta">Select Movie / Clip</string>
+    <string name="change_video_cta">Change Video</string>
+    <string name="generate_script_cta">Generate Burmese Script</string>
+    <string name="generating_script_title">ဇာတ်လမ်းကို ခွဲခြမ်းစိတ်ဖြာနေပါတယ်...</string>
+    <string name="dub_generate_cta">Translate &amp; AI Dub Video</string>
+    <string name="dub_render_cta">Render Burmese Video</string>
+    <string name="dub_download_cta">Download to Gallery</string>
+    <string name="dub_share_cta">Share Video</string>
+    <string name="save_to_vault">Save to Vault</string>
+    <string name="copy_full_script">Copy Full Script</string>
+    <string name="teleprompter_mode">Teleprompter</string>
+    <string name="empty_vault_title">No Saved Scripts Yet</string>
+    <string name="empty_vault_subtitle">Pick a movie clip in Studio to generate and save your first Myanmar Movie Recap script.</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="api_key_settings">API Key</string>
+    <string name="api_key_dialog_title">API Key / Settings</string>
+    <string name="api_key_dialog_subtitle">Paste your own Gemini API key to connect directly to Google AI without Firebase App Check restrictions in Debug APKs.</string>
+    <string name="coins_and_vip">Coins &amp; VIP</string>
+    <string name="help_and_support">Help &amp; Support</string>
+    <string name="admin_control_center">Admin Control Center</string>
+</resources>
